@@ -4,26 +4,29 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "games")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Game {
+public class GameModel {
 
     @Id
-    private final UUID id = UUID.randomUUID();
+    @GeneratedValue
+    @Column(updatable = false, nullable = false)
+    private  UUID id;
 
     @Column(unique = true, nullable = false)
     private String title;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User user;
+    @ManyToMany(mappedBy = "games")
+    private List<UserModel> users = new ArrayList<>();
 
-    public Game(String title) {
+    public GameModel(String title) {
         this.title = title;
     }
 
