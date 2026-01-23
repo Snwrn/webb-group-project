@@ -1,9 +1,66 @@
 package webb_kurs.gruppuppgift.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import webb_kurs.gruppuppgift.repository.GameRepository;
 
+import java.util.List;
+
+import webb_kurs.gruppuppgift.model.GameModel;
+import webb_kurs.gruppuppgift.repository.IGameRepository;
+import webb_kurs.gruppuppgift.repository.IUserRepository;
+
+@RequiredArgsConstructor
 @Service
-public class GameService extends GameRepository {
+public class GameService {
 
+    private final IGameRepository gameRepository;
+    private final IUserRepository userRepository;
+
+    public List<GameModel> findAllGames() {
+        return gameRepository.findAll();
+    }
+
+    public GameModel createGame(String title, String genre) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title får inte vara tom");
+        }
+        if (genre == null || genre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Genre får inte vara tom");
+        }
+
+        if (gameRepository.findByTitle(title).isPresent()) {
+            throw new RuntimeException("Game med title finns redan");
+        }
+
+        GameModel newGame = new GameModel(title, genre);
+        return gameRepository.save(newGame);
+    }
+
+    public GameModel updateGame(String title, GameModel updatedData) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title får inte vara tom");
+        }
+        if (updatedData == null) {
+            throw new IllegalArgumentException("updatedData får inte vara null");
+        }
+
+        GameModel existing = gameRepository.findByTitle(title)
+                .orElseThrow(() -> new RuntimeException("Game med title hittades inte"));
+
+        existing.setTitle(updatedData.getTitle());
+        existing.setGenre(updatedData.getGenre());
+
+        return gameRepository.save(existing);
+    }
+
+    public void deleteGame(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title får inte vara tom");
+        }
+
+        GameModel existing = gameRepository.findBytitle(title)
+                .orElseThrow(() -> new RuntimeException("Game med title hittades inte"));
+
+        gameRepository.delete(existing);
+    }
 }
