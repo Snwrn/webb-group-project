@@ -7,5 +7,5 @@ import webb_kurs.gruppuppgift.model.GameModel;
 import java.util.UUID;
 
 @Repository
-public interface GameRepository extends JpaRepository<GameModel, UUID> {
+public interface IGameRepository extends JpaRepository<GameModel, UUID> {
 }

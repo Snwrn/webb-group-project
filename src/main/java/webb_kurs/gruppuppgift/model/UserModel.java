@@ -1,5 +1,6 @@
 package webb_kurs.gruppuppgift.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class UserModel {
     @Column(unique = true, nullable = false)
     private String username;
     @Column(nullable = false)
+    @JsonIgnore   // Ta bort när DTO är fixad
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
