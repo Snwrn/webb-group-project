@@ -1,11 +1,13 @@
 package webb_kurs.gruppuppgift.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import webb_kurs.gruppuppgift.model.GameModel;
+import webb_kurs.gruppuppgift.model.UserModel;
 import webb_kurs.gruppuppgift.repository.IGameRepository;
 import webb_kurs.gruppuppgift.repository.IUserRepository;
 
@@ -51,6 +53,29 @@ public class GameService {
         existing.setGenre(updatedData.getGenre());
 
         return gameRepository.save(existing);
+    }
+
+
+    @Transactional
+    public void addGameToUser(String username, String title) {
+
+        UserModel user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User " + username + " not found"));
+
+        GameModel game = gameRepository.findByTitle(title)
+                .orElseThrow(() -> new RuntimeException("Game" + title + " not found"));
+        if
+        (!user.getGames().contains(game)){
+            user.getGames().add(game);
+            userRepository.save(user);
+        }
+    }
+
+    public List<GameModel> findAllGamesByUser(String username) {
+        UserModel user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User " + username + "not found"));
+
+        return user.getGames();
     }
 
     public void deleteGame(String title) {
