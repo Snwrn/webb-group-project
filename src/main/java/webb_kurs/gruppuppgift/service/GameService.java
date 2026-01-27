@@ -24,14 +24,14 @@ public class GameService {
 
     public GameModel createGame(String title, String genre) {
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title får inte vara tom");
+            throw new IllegalArgumentException("Title cannot be empty.");
         }
         if (genre == null || genre.trim().isEmpty()) {
-            throw new IllegalArgumentException("Genre får inte vara tom");
+            throw new IllegalArgumentException("Genre cannot be empty.");
         }
 
         if (gameRepository.findByTitle(title).isPresent()) {
-            throw new RuntimeException("Game med title finns redan");
+            throw new RuntimeException("Game with title already exist");
         }
 
         GameModel newGame = new GameModel(title, genre);
@@ -40,14 +40,14 @@ public class GameService {
 
     public GameModel updateGame(String title, GameModel updatedData) {
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title får inte vara tom");
+            throw new IllegalArgumentException("Title cannot be empty.");
         }
         if (updatedData == null) {
-            throw new IllegalArgumentException("updatedData får inte vara null");
+            throw new IllegalArgumentException("updatedData cannot be null.");
         }
 
         GameModel existing = gameRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Game med title hittades inte"));
+                .orElseThrow(() -> new RuntimeException("Game with title wasn't found"));
 
         existing.setTitle(updatedData.getTitle());
         existing.setGenre(updatedData.getGenre());
@@ -80,11 +80,11 @@ public class GameService {
 
     public void deleteGame(String title) {
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title får inte vara tom");
+            throw new IllegalArgumentException("Title cannot be empty");
         }
 
         GameModel existing = gameRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Game med title hittades inte"));
+                .orElseThrow(() -> new RuntimeException("Game with title wasn't found!"));
 
         gameRepository.delete(existing);
     }
