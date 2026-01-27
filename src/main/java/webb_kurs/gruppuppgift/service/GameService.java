@@ -83,7 +83,7 @@ public class GameService {
             throw new IllegalArgumentException("Title får inte vara tom");
         }
 
-        GameModel existing = gameRepository.findBytitle(title)
+        GameModel existing = gameRepository.findByTitle(title)
                 .orElseThrow(() -> new RuntimeException("Game med title hittades inte"));
 
         gameRepository.delete(existing);
