@@ -8,6 +8,7 @@ import webb_kurs.gruppuppgift.service.UserService;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -20,9 +21,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserModel user) {
+    public ResponseEntity<?> createUser(@RequestBody CreateUserRequest request) {
         try {
-            var createdUser = userService.createUser(user.getUsername(), user.getPassword());
+            var createdUser = userService.createUser(request.username(), request.password());
             return ResponseEntity.created(URI.create("/users")).body(createdUser);
         } catch (IllegalArgumentException exception) {
             return ResponseEntity
@@ -33,8 +34,22 @@ public class UserController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<UserModel>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserModel> getUserById(@PathVariable UUID userId) {
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
+        userService.deleteUser(username);
+        return ResponseEntity.noContent().build();
+    }
+    //DTO flytta till egen mapp?
+    public record CreateUserRequest(String username, String password) { }
 }
+
