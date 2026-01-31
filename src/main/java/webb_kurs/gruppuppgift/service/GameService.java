@@ -2,6 +2,7 @@ package webb_kurs.gruppuppgift.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class GameService {
         }
 
         if (gameRepository.findByTitle(title).isPresent()) {
-            throw new RuntimeException("Game with title already exist");
+            throw new IllegalArgumentException("Game with title already exist");
         }
 
         GameModel newGame = new GameModel(title, genre);
@@ -47,7 +48,7 @@ public class GameService {
         }
 
         GameModel existing = gameRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Game with title wasn't found"));
+                .orElseThrow(() -> new IllegalArgumentException("Game with title wasn't found"));
 
         existing.setTitle(updatedData.getTitle());
         existing.setGenre(updatedData.getGenre());
@@ -59,21 +60,35 @@ public class GameService {
     @Transactional
     public void addGameToUser(String username, String title) {
 
+        String loggedInUsername = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        if (!loggedInUsername.equals(username)) {
+            throw new IllegalArgumentException("You can only add games to your own account");
+        }
+
         UserModel user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User " + username + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         GameModel game = gameRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Game" + title + " not found"));
-        if
-        (!user.getGames().contains(game)){
-            user.getGames().add(game);
-            userRepository.save(user);
-        }
+                .orElseThrow(() -> new IllegalArgumentException("Game not found"));
+
+        user.getGames().add(game);
+        userRepository.save(user);
     }
 
     public List<GameModel> findAllGamesByUser(String username) {
+        String loggedInUsername = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        if (!loggedInUsername.equals(username)) {
+            throw new IllegalArgumentException("You can only see your own games.");
+        }
+        
         UserModel user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User " + username + "not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User " + username + "not found"));
 
         return user.getGames();
     }
@@ -84,7 +99,12 @@ public class GameService {
         }
 
         GameModel existing = gameRepository.findByTitle(title)
-                .orElseThrow(() -> new RuntimeException("Game with title wasn't found!"));
+                .orElseThrow(() -> new IllegalArgumentException("Game with title wasn't found!"));
+
+
+        for (UserModel user : existing.getUsers()) {
+            user.getGames().remove(existing);
+        }
 
         gameRepository.delete(existing);
     }

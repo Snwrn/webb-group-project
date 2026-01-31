@@ -1,5 +1,6 @@
 package webb_kurs.gruppuppgift.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Setter;
 
@@ -24,6 +25,7 @@ public class GameModel {
     private String genre;
 
     @Setter
+    @JsonIgnore
     @ManyToMany(mappedBy = "games")
     private List<UserModel> users = new ArrayList<>();
 

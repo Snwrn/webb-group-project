@@ -1,6 +1,7 @@
 package webb_kurs.gruppuppgift.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import webb_kurs.gruppuppgift.model.UserModel;
 import webb_kurs.gruppuppgift.repository.IUserRepository;
@@ -13,6 +14,7 @@ import java.util.UUID;
 public class UserService {
 
     private final IUserRepository IUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserModel createUser(String username, String password) {
         if (username.isBlank() || username.length() < 4) {
@@ -38,15 +40,16 @@ public class UserService {
             throw new IllegalArgumentException("User already exists.");
         }
 
-        var user = new UserModel(username, password);
+        String hashedPassword = passwordEncoder.encode(password);
+
+        var user = new UserModel(username, hashedPassword);
         user = IUserRepository.save(user);
-        // TODO: Implement proper logging
         System.out.println("User '" + user.getId() + "' with name '" + user.getUsername() + "' created.");
 
         return user;
-    }
+    } // TODO: Implement proper logging
 
-    // Ska bara kunna användas av ADMIN
+
     // TODO: fixa validering så admin enbart kan göra det
     public void deleteUser(String username) {
 
@@ -65,5 +68,3 @@ public class UserService {
         .orElseThrow(() -> new IllegalArgumentException("User with id" + id + " not found"));
     }
 }
-
-// TODO: hashing med lösenord!!

@@ -27,9 +27,12 @@ public class UserModel {
     @Column(nullable = false)
     @JsonIgnore   // Ta bort när DTO är fixad
     private String password;
+    @Column(nullable = false)
+    private String role = "USER";
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
+
             name = "user_library",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
@@ -39,6 +42,7 @@ public class UserModel {
     public UserModel(String username, String password) {
         this.username = username;
         this.password = password;
+        this.role = "USER";
     }
 }
 
