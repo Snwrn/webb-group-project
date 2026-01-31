@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 
@@ -59,13 +60,16 @@ public class GameService {
 
     @Transactional
     public void addGameToUser(String username, String title) {
-
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AccessDeniedException("You need to log in to do this.");
+        }
         String loggedInUsername = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getName();
 
         if (!loggedInUsername.equals(username)) {
-            throw new IllegalArgumentException("You can only add games to your own account");
+            throw new AccessDeniedException("You can only add games to your own account");
         }
 
         UserModel user = userRepository.findByUsername(username)
@@ -79,12 +83,16 @@ public class GameService {
     }
 
     public List<GameModel> findAllGamesByUser(String username) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AccessDeniedException("You need to log in to do this.");
+        }
         String loggedInUsername = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getName();
 
         if (!loggedInUsername.equals(username)) {
-            throw new IllegalArgumentException("You can only see your own games.");
+            throw new AccessDeniedException("You can only see your own games.");
         }
         
         UserModel user = userRepository.findByUsername(username)

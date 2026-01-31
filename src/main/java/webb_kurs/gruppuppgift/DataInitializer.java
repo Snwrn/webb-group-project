@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import webb_kurs.gruppuppgift.model.UserModel;
 import webb_kurs.gruppuppgift.repository.IUserRepository;
 
+
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
@@ -20,7 +21,7 @@ public class DataInitializer implements CommandLineRunner {
     private String adminPassword;
 
     @Override
-    public void run(String... args) {
+    public void run( String... args) {
         if (userRepository.findByUsername("admin").isEmpty()) {
             var admin = new UserModel("admin", passwordEncoder.encode(adminPassword));
             admin.setRole("ADMIN");

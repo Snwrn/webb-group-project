@@ -18,9 +18,6 @@ public class GameController {
     public GameController(GameService gameService) {
         this.gameService = gameService;
     }
-    private boolean isAdmin(String username) {
-        return "admin".equals(username);
-    }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
