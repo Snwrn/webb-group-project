@@ -30,11 +30,9 @@ public class UserService {
         }
 
         if (!password.matches(".*\\d.*")) {
-            throw new IllegalArgumentException("Password must contain at least one letter.");}
+            throw new IllegalArgumentException("Password must contain at least one digit.");}
 
-        if (password.isEmpty()) {
-            throw new IllegalArgumentException("Password must not be empty.");
-        }
+
 
         if (IUserRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("User already exists.");
