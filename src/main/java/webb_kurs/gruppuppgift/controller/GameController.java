@@ -25,11 +25,11 @@ public class GameController {
         try {
             var createdGame = gameService.createGame(request.title(), request.genre());
             return ResponseEntity.created(URI.create("/games")).body(createdGame);
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity
                     .badRequest()
                     .body(Map.of(
-                            "message", "Failed to create a game."
+                            "error", e.getMessage()
                     ));
         }
     }
