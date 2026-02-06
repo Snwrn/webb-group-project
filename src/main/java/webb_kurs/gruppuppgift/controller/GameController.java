@@ -1,5 +1,6 @@
 package webb_kurs.gruppuppgift.controller;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ public class GameController {
     public GameController(GameService gameService) {
         this.gameService = gameService;
     }
+
     private boolean isAdmin(String username) {
         return "admin".equals(username);
     }
@@ -28,7 +30,7 @@ public class GameController {
         try {
             var createdGame = gameService.createGame(request.title(), request.genre());
             return ResponseEntity.created(URI.create("/games")).body(createdGame);
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException | DuplicateKeyException e) {
             return ResponseEntity
                     .badRequest()
                     .body(Map.of(
@@ -64,17 +66,14 @@ public class GameController {
         return ResponseEntity.noContent().build();
     }
 
-
-    @PutMapping ("/{title}")
+    @PutMapping("/{title}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GameModel> updateGame(@PathVariable String title, @RequestBody GameModel updatedData) {
-        try  {
+        try {
             GameModel updatedGame = gameService.updateGame(title, updatedData);
             return ResponseEntity.ok(updatedGame);
-        } catch (IllegalArgumentException exception) {
+        } catch (RuntimeException exception) {
             return ResponseEntity.notFound().build();
         }
     }
-
-
 }

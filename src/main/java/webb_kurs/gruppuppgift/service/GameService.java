@@ -1,7 +1,10 @@
 package webb_kurs.gruppuppgift.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +35,7 @@ public class GameService {
         }
 
         if (gameRepository.findByTitle(title).isPresent()) {
-            throw new IllegalArgumentException("Game with title already exist");
+            throw new DuplicateKeyException("Game with title already exist");
         }
 
         GameModel newGame = new GameModel(title, genre);
@@ -44,7 +47,7 @@ public class GameService {
             throw new IllegalArgumentException("Title cannot be empty.");
         }
         if (updatedData == null) {
-            throw new IllegalArgumentException("updatedData cannot be null.");
+            throw new NullPointerException("updatedData cannot be null.");
         }
 
         GameModel existing = gameRepository.findByTitle(title)
@@ -69,10 +72,10 @@ public class GameService {
         }
 
         UserModel user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         GameModel game = gameRepository.findByTitle(title)
-                .orElseThrow(() -> new IllegalArgumentException("Game not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Game not found"));
 
         user.getGames().add(game);
         userRepository.save(user);
@@ -84,11 +87,11 @@ public class GameService {
                 .getName();
 
         if (!loggedInUsername.equals(username)) {
-            throw new IllegalArgumentException("You can only see your own games.");
+            throw new AccessDeniedException("You can only see your own games.");
         }
-        
+
         UserModel user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User " + username + "not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User " + username + "not found"));
 
         return user.getGames();
     }
@@ -99,7 +102,7 @@ public class GameService {
         }
 
         GameModel existing = gameRepository.findByTitle(title)
-                .orElseThrow(() -> new IllegalArgumentException("Game with title wasn't found!"));
+                .orElseThrow(() -> new EntityNotFoundException("Game with title wasn't found!"));
 
 
         for (UserModel user : existing.getUsers()) {
