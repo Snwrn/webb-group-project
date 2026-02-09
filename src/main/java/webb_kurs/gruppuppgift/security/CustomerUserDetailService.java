@@ -1,4 +1,4 @@
-package webb_kurs.gruppuppgift;
+package webb_kurs.gruppuppgift.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;

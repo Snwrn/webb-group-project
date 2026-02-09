@@ -1,4 +1,4 @@
-package webb_kurs.gruppuppgift;
+package webb_kurs.gruppuppgift.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
