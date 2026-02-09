@@ -1,5 +1,6 @@
 package webb_kurs.gruppuppgift.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class UserService {
 
 
         if (IUserRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("User already exists.");
+            throw new IllegalStateException("User already exists.");
         }
 
         String hashedPassword = passwordEncoder.encode(password);
@@ -45,14 +46,13 @@ public class UserService {
         System.out.println("User '" + user.getId() + "' with name '" + user.getUsername() + "' created.");
 
         return user;
-    } // TODO: Implement proper logging
+    }
 
 
-    // TODO: fixa validering så admin enbart kan göra det
     public void deleteUser(String username) {
 
         UserModel user = IUserRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
 
         IUserRepository.delete(user);
     }
@@ -63,6 +63,6 @@ public class UserService {
 
     public UserModel getUserById(UUID id) {
         return IUserRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("User with id" + id + " not found"));
+        .orElseThrow(() -> new EntityNotFoundException("User with id" + id + " not found"));
     }
 }

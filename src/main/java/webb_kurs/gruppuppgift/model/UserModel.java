@@ -25,7 +25,7 @@ public class UserModel {
     @Column(unique = true, nullable = false)
     private String username;
     @Column(nullable = false)
-    @JsonIgnore   // Ta bort när DTO är fixad
+    @JsonIgnore
     private String password;
     @Column(nullable = false)
     private String role = "USER";

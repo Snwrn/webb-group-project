@@ -29,12 +29,7 @@ import org.springframework.security.web.SecurityFilterChain;
                     )
 
 
-                    /*
-                     .requestMatchers("/register").permitAll()       // /register är tillgänglig för alla
-                            .requestMatchers("/login").permitAll()          // /login är tillgänglig för alla
-                            .requestMatchers("/authorized-endpoint").hasRole("ADMIN")
-                            .anyRequest().authenticated();                  // Alla andra endpoints kräver inloggning
-                     */
+
                     .httpBasic(Customizer.withDefaults());
 
             return http.build();
@@ -45,6 +40,3 @@ import org.springframework.security.web.SecurityFilterChain;
             return new BCryptPasswordEncoder();
         }
     }
-
-    // .requestMatchers(HttpMethod.POST, "/users").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/games/**").permitAll()
